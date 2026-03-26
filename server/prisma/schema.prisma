@@ -1,0 +1,69 @@
+// Prisma schema - defines your database structure
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表
+model User {
+  id        String   @id @default(nanoid(12))
+  phone     String?  @unique                // 手机号（可选，后续开通短信登录时使用）
+  email     String?  @unique                // 邮箱（可选）
+  password  String?                         // 密码哈希（密码登录时使用）
+  nickname  String   @default("新用户")
+  avatar    String?                         // 头像 URL
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  records Record[]
+
+  @@map("users")
+}
+
+// 记录表 - 每条时光记录
+model Record {
+  id        String   @id @default(nanoid(12))
+  userId    String   @map("user_id")
+  date      DateTime                         // 拍摄/记录日期（EXIF 或手动填写）
+  title     String                           // memo 第一行，用于卡片展示
+  memo      String   @default("")            // 富文本内容
+  mediaType MediaType @default(PHOTO) @map("media_type")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  media Media[]
+
+  @@index([userId, date(sort: Desc)])   // 按用户 + 日期倒序查询（核心查询）
+  @@map("records")
+}
+
+// 媒体文件表 - 一条记录可以有多张照片或一个视频
+model Media {
+  id       String   @id @default(nanoid(12))
+  recordId String   @map("record_id")
+  url      String                           // 文件访问路径
+  type     String                           // image/jpeg, video/mp4 等
+  size     Int                              // 文件大小（字节）
+  width    Int?                             // 图片/视频宽度
+  height   Int?                             // 图片/视频高度
+  sort     Int      @default(0)             // 排序序号（多图时用）
+  isCover  Boolean  @default(false) @map("is_cover")  // 是否为封面
+
+  record Record @relation(fields: [recordId], references: [id], onDelete: Cascade)
+
+  @@index([recordId, sort])
+  @@map("media")
+}
+
+enum MediaType {
+  PHOTO
+  VIDEO
+}
