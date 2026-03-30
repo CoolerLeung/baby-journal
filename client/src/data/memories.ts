@@ -1,0 +1,332 @@
+import type { MemoryDetail, TimelineMonth } from '../types/memory';
+
+const images = {
+  profile:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuBCKg0OtOkAUfAEiN5kJ8ZAiIoNxhwtIag2aDFrlxFq7K0_kPmmLKksZUoj53q3zrj4AsKUIorCcUgKs0XedoHOeOzejgACPjp4c499zBK9QAF4zThXnBt3P_vrqCmjMl-6gQXKTYjCwYC46EiW5xaUXk5JeemlYzi3uw0TPov5CNwdCekUEJ58IFe5UaSX7nX275ekh5JqoLqiUoYGTz-kl5adgyZCeJHqRCsj0rWVgvgA7HzVAW7Od4kN-esD8u0MMamojfUha2w',
+  steps:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuCTYe-OPfkbD-k9KeY4OgmbsA2B2kIz4ltFbGTl8Iw34X3ewMm5k-jSyv4zfjOAFjOZPIe38dxfQ4wWJkxZytW32OdMGsvb4JtfFmQygiaSI2ZbRjgLj9vBToEqcO2XGyA4oYQLD-WbpgfIOKwie9aQoew1pRSmwwJ7wJAg7O0iYDz5iX7DcU179aEw9qijFr-SQeBcNmb3PDzaIV7sdLJR7raVsR7euKqZmCaVTr1lTU0cVDpMI0dyrSZsKY8CjImorLyzJYjG6vY',
+  feeding:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuAoS8btE50tQa232QhvC1I2JgQcHcYLPUyQG99o5jKbdNfG1uXvJpx1Lfd6FkJGhvqBSbr8Fmm2YxNJxvTnBsq5_DoPAdgfcPnGElN5ungTx4aj3Zv4v_xWCWRCg-uFx4PC99u5M7bC7nZcBGHiny2zg_dlMFmk1AV5r_woTQeSnvlKE0TQum0umoMsL5ID7kCqttGrIxQn9iKlrBNRDhY-girVugqSiCbcgq4NzCKnhc1zE1M1i26reL_a9RxxhB3hSNItNx-lSm0',
+  nap:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuDA40agJWOcwmGR7sDmBjLnwavB3cGbS3arWVsFzTStoyoOWRsu8VzNcgOkvPxpi2kIPF0Qb9vBzgWkpsJqhPP9JSyN_IILVFtanYOJqln0cFvxvmpZCMFWd1UC2_Pt19KXcaQooZa7NMpzavIxTtf__VRITQH1ce5pSJhgSCfoCL3xAoXDUDLGfiwWk1rCemcPslEjpTwa6XCOIaW0WiRBq2L1PLMxdVoT_r6fFHZ4ldN2EA1-bM8HWbsbr-1d9hxy6DWi1U2fBcc',
+  portrait:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuBYMC3LTmLdHWZk5YJJOpdEmFzWu-uyTunCU-So4LQmRgDJSH1ReaehXHhTa7iEx7gRbgEP3Ompcc-Dah_qNIhDXcYWFZSykGkisFbBXq8U0tUHtzcPPJVFr3xsNXFFu2qVyie1VD6plgBOnOnvFgnMv-3I81wrTavJHh74b0kXksJOnSLv4IHgWw_-RtDnOTEzVYVNNX7wydhf0cnfcdp3-qIzjF2bBqrsrUmG0lkSvcsF-Td-2_bVrFY-SmOdFkF70-z1BayJ8x4',
+  beach:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuBQJkOMq6K4Jrc2GQ3Do8RApFDNss-l2uvRNUB_2t6N0tQDo61I6aOeH_9KzefzMP9lW-71nfOBWdjRriImFghxwGsYN37tBK9XK6sNwTGI6GgZLXXjJUcHHCZBQrUUuZNi1jaG5VliAbZPPTpV316yqqONKZbXCdoW_oavtWHAtSuCiXcYJmng0jlYo28lSi5IRDcBy-718rsGllZrHgueO3HNfvV10knd_R7SmuiR7MD7CtMgEaBp1-qWniTvqZyFsq_uQPALics',
+  details:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuAHSstHfQPLzlvVbn-pMw3yPWGPJmebzBK9N4RGRdG72Xqb_5JEbdHs29RhI15t9nFHiXTnPUi_oYbdmF-GerND81h0Y0u9AmJtjb4RsKfLZUb8sh_aUwSfl9KrqGuY6ZiUtP8n1kZV0HNAYVmuLUquGjh-otIZcBu4QmeRj7-p7HNarpAmuWVAIHA6Kb4lLUGiMSzT0B5uFbIgXgMsfWyT7U9x-0Ol89pQJfhXXuXYRr64UpAz4S5w8qA0_YAFtsSVk1nXiAq3eAw',
+  play:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuBDY8l83rBGCi5vUt1aMd0FBAaQ1TzrnwqJaJrQYe_pAHYxWlm5WFZmLHOvzTPJsZUk_WsMF8FtIi53UOyUfvuSSO0sYfPGZvkdk7b1G2QE9_ebEtk5m3pSTmf3s0ij3jA3t4H-dgnO7OWJ7qoQhzZ9HdfqZNT0fQLNN3eJSUvsYlhNlkWhczfI_c8OP0zpuFqWr0utL-z3dxpXwektTEpwAmaKUBdqXNURemwR13cnxXL0IZwWOmf9BoodYfhXv8ceoZKpoXGozkE',
+  wonder:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuBAs_Od5XhLBmm3rImseOi-JYiiArlLmRWy117-8aJa3Dp9yI9frZPuzKbUoyZYu63UZZJO214PGX6eLMz7cT4ChQujC084svx4RRg0ZjsxQ9NI8G-cwgg7hWlOCV-u0v5eP3f9GnV-mDm9EseA1H8ECF__d1ooVUoU62raeaE748tdruoPMiDKhDfaetRffLYm3FPjz-bLYASXq3Mf61uZpMqd6TZ2ttOIYfOnetqtebr6dzajXjPJCGME_7AuGqM_Y2xM1BceGzA',
+} as const;
+
+export const sidebarProfile = {
+  name: 'Baby Oliver',
+  ageLabel: '8 Months Old',
+  image: images.profile,
+};
+
+export const timelineMonths: TimelineMonth[] = [
+  {
+    month: 'August',
+    year: '2023',
+    cards: [
+      {
+        id: 'first-steps',
+        variant: 'featured',
+        category: 'Milestone',
+        date: 'Aug 14, 2023',
+        title: 'First wobbles and a big brave step!',
+        description:
+          'We were just playing in the living room when Oliver suddenly pulled himself up using the coffee table and took a tiny, shaky step toward the sofa. My heart skipped a beat! He looked so proud of himself.',
+        image: images.steps,
+        likes: 12,
+        comments: 4,
+      },
+      {
+        id: 'carrot-puree',
+        variant: 'standard',
+        category: 'Foodie',
+        date: 'Aug 10, 2023',
+        title: 'Carrot Puree Success',
+        description:
+          'Finally a vegetable he actually likes! The kitchen is a mess, but that smile is worth every orange stain.',
+        image: images.feeding,
+      },
+      {
+        id: 'quiet-afternoon',
+        variant: 'standard',
+        category: 'Daily',
+        date: 'Aug 05, 2023',
+        title: 'Quiet Afternoon',
+        description:
+          'A rare moment of total peace. Watching him sleep is the most therapeutic part of my day.',
+        image: images.nap,
+      },
+      {
+        id: 'first-syllables',
+        variant: 'quote',
+        quote: '"Ba-ba-ba!"',
+        description:
+          'His very first clear syllables. Dada is convinced it means him, but I think he just likes the sound!',
+        date: 'Aug 22, 2023',
+      },
+      {
+        id: 'holding-on',
+        variant: 'portrait',
+        category: 'Portrait',
+        date: 'Aug 28, 2023',
+        title: 'Holding On',
+        description:
+          "Tiny fingers, huge grip. It's amazing how much love fits into one little hand.",
+        image: images.portrait,
+      },
+    ],
+  },
+  {
+    month: 'July',
+    year: '2023',
+    cards: [
+      {
+        id: 'beach-baby',
+        variant: 'overlay',
+        title: 'Beach Baby',
+        date: 'July 18',
+        image: images.beach,
+        alt: 'Beach Day',
+      },
+      {
+        id: 'tiny-details',
+        variant: 'overlay',
+        title: 'Tiny Details',
+        date: 'July 12',
+        image: images.details,
+        alt: 'Details',
+      },
+      {
+        id: 'giggles',
+        variant: 'overlay',
+        title: 'Giggles',
+        date: 'July 05',
+        image: images.play,
+        alt: 'Playtime',
+      },
+      {
+        id: 'wonder',
+        variant: 'overlay',
+        title: 'Wonder',
+        date: 'July 01',
+        image: images.wonder,
+        alt: 'Wonder',
+      },
+    ],
+  },
+];
+
+export const detailMemories: Record<string, MemoryDetail> = {
+  'first-steps': {
+    id: 'first-steps',
+    breadcrumbLabel: 'First Steps',
+    title: 'First Wobbly Step',
+    dateLabel: 'AUGUST 14, 2023',
+    author: 'Mom',
+    time: '6:18 PM',
+    location: 'Home, Living Room',
+    camera: 'LUMIX S5 · 50mm',
+    audioTitle: 'Golden Hour Lullaby',
+    body: [
+      'You steadied yourself against the coffee table, eyes fixed on the sofa like it was the finish line. Then came that tiny shift forward, one uncertain step powered entirely by stubbornness and curiosity.',
+      'The room went completely still for a second before we all started cheering. You looked shocked by the applause, then immediately tried to do it again as if this had always been your plan.',
+      'It lasted no more than a moment, but it changed the feeling of the whole house. Suddenly every corner looked like the next place you would try to reach.',
+    ],
+    tags: ['#Milestones', '#FirstSteps', '#August2023'],
+    previousLabel: 'Park Morning',
+    nextLabel: 'First Solid Food',
+    mainImage: images.steps,
+    galleryImages: [images.steps, images.portrait, images.feeding],
+  },
+  'carrot-puree': {
+    id: 'carrot-puree',
+    breadcrumbLabel: 'Carrot Puree Success',
+    title: 'Carrot Puree Success',
+    dateLabel: 'AUGUST 10, 2023',
+    author: 'Mom',
+    time: '12:07 PM',
+    location: 'Home, Kitchen',
+    camera: 'iPhone 15 Pro · 24mm',
+    audioTitle: 'Kitchen Daydream',
+    body: [
+      'After three failed attempts with peas and pumpkin, carrots finally won you over. The first spoonful disappeared before I could even grab another napkin.',
+      'Most of it still ended up on the bib, the tray, and somehow the wall, but the expression on your face made the cleanup feel irrelevant.',
+      'There was something satisfying about watching you decide, very clearly, that this was acceptable food and worth another bite.',
+    ],
+    tags: ['#Foodie', '#Weaning', '#KitchenMoments'],
+    previousLabel: 'Nap Window',
+    nextLabel: 'Holding On',
+    mainImage: images.feeding,
+    galleryImages: [images.feeding, images.steps, images.nap],
+  },
+  'quiet-afternoon': {
+    id: 'quiet-afternoon',
+    breadcrumbLabel: 'Quiet Afternoon',
+    title: 'First Rainy Afternoon',
+    dateLabel: 'OCTOBER 12, 2024',
+    author: 'Mom',
+    time: '3:42 PM',
+    location: 'Home, Cozy Corner',
+    camera: 'LUMIX S5 · 50mm',
+    audioTitle: 'Lullaby in C Major',
+    body: [
+      "There's a particular kind of quiet that settles over the house when the first autumn rains begin. Today, the sky turned a soft charcoal, and the world outside slowed down to a rhythmic pitter-patter against the nursery window.",
+      "You were so curious, pressing your tiny palms against the cool glass, watching the droplets race each other down the pane. I sat behind you, the scent of lavender tea filling the room, realizing that these are the moments we'll keep forever.",
+      'You eventually fell asleep to the sound of the rain, tucked into your favorite moss-green blanket. Your breathing was so steady, so peaceful, a perfect harmony with the weather outside.',
+    ],
+    tags: ['#Milestones', '#RainyDays', '#Autumn2024'],
+    previousLabel: 'Park Morning',
+    nextLabel: 'First Solid Food',
+    mainImage: images.nap,
+    galleryImages: [images.nap, images.beach, images.details],
+  },
+  'first-syllables': {
+    id: 'first-syllables',
+    breadcrumbLabel: 'First Syllables',
+    title: 'Ba-ba-ba!',
+    dateLabel: 'AUGUST 22, 2023',
+    author: 'Mom',
+    time: '8:03 AM',
+    location: 'Home, Nursery',
+    camera: 'iPhone 15 Pro · 24mm',
+    audioTitle: 'Morning Babble',
+    body: [
+      'The sound came out sharp and clear enough that everyone in the room stopped and looked at each other to confirm it had really happened.',
+      'You repeated it with absolute confidence, delighted by the reaction you got. Naturally, Dada claimed victory immediately.',
+      'Whether it meant anything or not, it felt like the start of a whole new chapter, one syllable at a time.',
+    ],
+    tags: ['#Language', '#FirstWords', '#FamilyLore'],
+    previousLabel: 'Quiet Afternoon',
+    nextLabel: 'Beach Baby',
+    mainImage: images.portrait,
+    galleryImages: [images.portrait, images.steps, images.play],
+  },
+  'holding-on': {
+    id: 'holding-on',
+    breadcrumbLabel: 'Holding On',
+    title: 'Holding On',
+    dateLabel: 'AUGUST 28, 2023',
+    author: 'Mom',
+    time: '5:14 PM',
+    location: 'Home, Window Seat',
+    camera: 'LUMIX S5 · 50mm',
+    audioTitle: 'Evening Glow',
+    body: [
+      'Your hand wrapped around one finger and refused to let go, like you already understood how to anchor a moment.',
+      'The light was soft and low, and for once no one moved to interrupt it. We just stayed there, noticing how quickly tiny hands start to change.',
+      "Photos help, but they still can't quite explain the feeling of being trusted so completely by someone so small.",
+    ],
+    tags: ['#Portrait', '#Connection', '#August2023'],
+    previousLabel: 'Carrot Puree Success',
+    nextLabel: 'Wonder',
+    mainImage: images.portrait,
+    galleryImages: [images.portrait, images.nap, images.details],
+  },
+  'beach-baby': {
+    id: 'beach-baby',
+    breadcrumbLabel: 'Beach Baby',
+    title: 'Beach Baby',
+    dateLabel: 'JULY 18, 2023',
+    author: 'Mom',
+    time: '4:20 PM',
+    location: 'Half Moon Bay',
+    camera: 'iPhone 15 Pro · 24mm',
+    audioTitle: 'Sea Breeze',
+    body: [
+      'You spent most of the afternoon squinting at the light and trying to understand the sound of the waves.',
+      'The sand felt suspicious at first, then fascinating. Every handful required a full inspection before being thrown away with great seriousness.',
+      'By sunset you looked completely spent, windblown, sandy, and very pleased with yourself.',
+    ],
+    tags: ['#BeachDay', '#Summer', '#July2023'],
+    previousLabel: 'First Syllables',
+    nextLabel: 'Tiny Details',
+    mainImage: images.beach,
+    galleryImages: [images.beach, images.play, images.wonder],
+  },
+  'tiny-details': {
+    id: 'tiny-details',
+    breadcrumbLabel: 'Tiny Details',
+    title: 'Tiny Details',
+    dateLabel: 'JULY 12, 2023',
+    author: 'Mom',
+    time: '10:11 AM',
+    location: 'Home, Bedroom',
+    camera: 'LUMIX S5 · 50mm',
+    audioTitle: 'Morning Light',
+    body: [
+      'The tiny crease in your hand, the impossible eyelashes, the way your socks never stayed on for more than ten minutes, all of it felt worth documenting.',
+      "Big milestones are easy to remember. It's these small details that fade first unless someone decides they matter enough to keep.",
+      'So I kept them. One frame at a time.',
+    ],
+    tags: ['#Details', '#Portraits', '#Keepsakes'],
+    previousLabel: 'Beach Baby',
+    nextLabel: 'Giggles',
+    mainImage: images.details,
+    galleryImages: [images.details, images.portrait, images.nap],
+  },
+  giggles: {
+    id: 'giggles',
+    breadcrumbLabel: 'Giggles',
+    title: 'Giggles',
+    dateLabel: 'JULY 05, 2023',
+    author: 'Mom',
+    time: '2:30 PM',
+    location: 'Home, Play Mat',
+    camera: 'iPhone 15 Pro · 24mm',
+    audioTitle: 'Playtime Loop',
+    body: [
+      'The laugh started halfway through a silly face and then kept going long after the joke had ended.',
+      'Each time we thought you were done, another burst came out, louder than the last. It felt less like playtime and more like a chain reaction.',
+      'That kind of joy changes the energy of an entire room almost instantly.',
+    ],
+    tags: ['#Giggles', '#Playtime', '#July2023'],
+    previousLabel: 'Tiny Details',
+    nextLabel: 'Wonder',
+    mainImage: images.play,
+    galleryImages: [images.play, images.beach, images.steps],
+  },
+  wonder: {
+    id: 'wonder',
+    breadcrumbLabel: 'Wonder',
+    title: 'Wonder',
+    dateLabel: 'JULY 01, 2023',
+    author: 'Mom',
+    time: '9:02 AM',
+    location: 'Home, Reading Nook',
+    camera: 'LUMIX S5 · 50mm',
+    audioTitle: 'Soft Morning',
+    body: [
+      'You stared at the room as if it had been rearranged overnight just for you. Every shadow and texture seemed to demand a closer look.',
+      'It is easy to forget how new everything is until you watch someone encounter the ordinary as if it is pure invention.',
+      'That is what I wanted to remember here, not just what you saw, but how intently you saw it.',
+    ],
+    tags: ['#Wonder', '#Observation', '#July2023'],
+    previousLabel: 'Giggles',
+    nextLabel: 'First Steps',
+    mainImage: images.wonder,
+    galleryImages: [images.wonder, images.details, images.beach],
+  },
+};
+
+export const timelinePebbles = ['Aug', 'Jul', 'Jun', 'May'];
+
+export const modalPreviewImages = [
+  {
+    src: images.portrait,
+    alt: 'Memory 1',
+    size: '4.2 MB',
+  },
+  {
+    src: images.steps,
+    alt: 'Memory 2',
+    size: '3.8 MB',
+  },
+];

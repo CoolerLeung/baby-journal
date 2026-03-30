@@ -1,0 +1,168 @@
+import { Bold, Calendar, ChevronDown, Cloud, ImagePlus, Italic, Lightbulb, Link as LinkIcon, List, Network, Smile, Sparkles, Wand2, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { modalPreviewImages } from '../data/memories';
+
+type AddMemoryModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export default function AddMemoryModal({ isOpen, onClose }: AddMemoryModalProps) {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 sm:p-6"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={{ type: 'spring', duration: 0.5, bounce: 0.3 }}
+            className="relative w-full max-w-5xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="bg-surface-container-lowest w-full rounded-[2rem] shadow-2xl flex flex-col overflow-hidden max-h-[95vh]">
+              <div className="px-8 py-6 flex justify-between items-center border-b border-surface-container-high">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 fill-current" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-headline font-bold text-on-surface">Add New Memory</h2>
+                    <p className="text-sm text-on-surface-variant font-body">
+                      Capture a moment in Baby&apos;s Journey
+                    </p>
+                  </div>
+                </div>
+                <button onClick={onClose} className="p-2 hover:bg-surface-container rounded-full transition-colors">
+                  <X className="w-6 h-6 text-on-surface-variant" />
+                </button>
+              </div>
+
+              <div className="flex flex-col lg:flex-row overflow-y-auto">
+                <div className="p-8 flex-1 lg:border-r border-surface-container-high flex flex-col gap-6">
+                  <div className="flex justify-between items-end">
+                    <h3 className="font-headline font-bold text-on-surface">Media Assets</h3>
+                    <span className="text-xs font-bold text-on-surface-variant">2 / 10 Selected</span>
+                  </div>
+
+                  <div className="border-2 border-dashed border-outline-variant rounded-3xl p-10 flex flex-col items-center justify-center gap-3 text-center bg-surface-container-lowest">
+                    <div className="w-12 h-12 rounded-full bg-primary-container/50 text-primary flex items-center justify-center mb-2">
+                      <ImagePlus className="w-6 h-6" />
+                    </div>
+                    <p className="font-headline font-bold text-on-surface">
+                      Drag &amp; Drop Photos
+                      <br />
+                      <span className="font-normal text-sm text-on-surface-variant">
+                        or{' '}
+                        <a href="#" className="underline font-bold">
+                          browse files
+                        </a>
+                      </span>
+                    </p>
+                    <p className="text-[10px] font-bold text-outline uppercase tracking-wider mt-2">
+                      Up to 10 photos or 1 video (max 500mb)
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {modalPreviewImages.map((image) => (
+                      <div key={image.src} className="relative rounded-2xl overflow-hidden aspect-square">
+                        <img
+                          src={image.src}
+                          className="w-full h-full object-cover"
+                          alt={image.alt}
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute bottom-3 left-3 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-full backdrop-blur-md">
+                          {image.size}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-8 flex-1 flex flex-col gap-6">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider flex items-center gap-2">
+                      <Calendar className="w-3 h-3" /> Memory Date
+                    </label>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1 bg-surface-container-low px-4 py-3 rounded-xl flex justify-between items-center cursor-pointer">
+                        <span className="text-sm font-bold text-on-surface">October 24, 2023</span>
+                        <ChevronDown className="w-4 h-4 text-on-surface-variant" />
+                      </div>
+                      <div className="bg-secondary-container/30 text-on-secondary-container px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-2">
+                        <Wand2 className="w-3 h-3" /> Detected from EXIF
+                      </div>
+                    </div>
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="Give this memory a title..."
+                    className="text-2xl font-headline font-bold text-on-surface placeholder:text-outline-variant w-full bg-transparent border-none focus:outline-none mt-2"
+                  />
+
+                  <div className="border border-surface-container-high rounded-2xl overflow-hidden flex flex-col flex-1 min-h-[200px]">
+                    <div className="bg-surface-container-lowest border-b border-surface-container-high p-3 flex gap-4 text-on-surface-variant items-center">
+                      <Bold className="w-4 h-4 cursor-pointer hover:text-on-surface" />
+                      <Italic className="w-4 h-4 cursor-pointer hover:text-on-surface" />
+                      <List className="w-4 h-4 cursor-pointer hover:text-on-surface" />
+                      <div className="w-px h-4 bg-surface-container-high mx-1" />
+                      <Smile className="w-4 h-4 cursor-pointer hover:text-on-surface" />
+                      <LinkIcon className="w-4 h-4 cursor-pointer hover:text-on-surface" />
+                    </div>
+                    <textarea
+                      placeholder="Write the story behind these photos..."
+                      className="flex-1 p-4 bg-surface-container-lowest resize-none focus:outline-none text-sm font-body text-on-surface"
+                    />
+                  </div>
+
+                  <div className="bg-surface-container-low rounded-2xl p-4 flex items-center justify-between mt-auto">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center">
+                        <Network className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-on-surface">Visibility</p>
+                        <p className="text-xs text-on-surface-variant">Family Circle Only</p>
+                      </div>
+                    </div>
+                    <button className="text-sm font-bold text-primary hover:text-primary-dim transition-colors">
+                      Change
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-surface-container-low px-8 py-6 flex justify-between items-center border-t border-surface-container-high">
+                <div className="flex items-center gap-2 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
+                  <Cloud className="w-4 h-4" /> Auto-syncing to cloud vault
+                </div>
+                <div className="flex items-center gap-6">
+                  <button onClick={onClose} className="text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors">
+                    Cancel
+                  </button>
+                  <button className="bg-primary text-on-primary px-8 py-3 rounded-full font-bold text-sm hover:brightness-110 transition-all editorial-shadow">
+                    Save Memory
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute -bottom-5 right-10 bg-secondary-container text-on-secondary-container px-6 py-3 rounded-full flex items-center gap-2 shadow-xl z-50">
+              <Lightbulb className="w-4 h-4" />
+              <span className="text-sm font-bold">Draft Autosaved</span>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
