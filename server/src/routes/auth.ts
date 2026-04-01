@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
-import { hash, compare } from 'bcryptjs'
+import bcrypt from 'bcryptjs'
+const { hash, compare } = bcrypt
 import { success } from '../middleware/errorHandler.js'
 
 interface RegisterBody {
